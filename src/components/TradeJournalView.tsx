@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Trade, TradeSide } from '../types/forex';
 import { SAMPLE_MT4_CSV } from '../services/mockData';
+import { WebhookBridgeModal } from './WebhookBridgeModal';
 import {
   BookOpen,
   Search,
@@ -16,6 +17,7 @@ import {
   ChevronRight,
   Upload,
   Sparkles,
+  Zap,
 } from 'lucide-react';
 
 interface TradeJournalViewProps {
@@ -43,6 +45,9 @@ export const TradeJournalView: React.FC<TradeJournalViewProps> = ({
   const [importErrors, setImportErrors] = useState<string[]>([]);
   const [isSuccessImport, setIsSuccessImport] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Webhook Bridge Modal
+  const [showWebhookModal, setShowWebhookModal] = useState<boolean>(false);
 
   // Manual Log Trade Modal
   const [showManualModal, setShowManualModal] = useState<boolean>(false);
@@ -239,6 +244,14 @@ export const TradeJournalView: React.FC<TradeJournalViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowWebhookModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-lg border border-blue-200 dark:border-blue-900 transition-colors shadow-xs"
+          >
+            <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+            <span>Webhook Bridge</span>
+          </button>
+
           <button
             onClick={() => setShowImportModal(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg border border-slate-300 dark:border-slate-700 transition-colors shadow-xs"
@@ -781,6 +794,40 @@ export const TradeJournalView: React.FC<TradeJournalViewProps> = ({
             </div>
           </form>
         </div>
+      )}
+
+      {/* Webhook Bridge Modal */}
+      {showWebhookModal && (
+        <WebhookBridgeModal
+          isOpen={showWebhookModal}
+          onClose={() => setShowWebhookModal(false)}
+          onImportWebhookTrade={(imported) => {
+            const newTrade: Trade = {
+              id: `wh-${Date.now()}`,
+              sourceTicket: `WH-${Math.floor(Math.random() * 899999 + 100000)}`,
+              symbol: imported.symbol || 'EUR/USD',
+              side: imported.side || 'BUY',
+              openTime: new Date().toISOString(),
+              closeTime: new Date().toISOString(),
+              entryPrice: imported.entryPrice,
+              exitPrice: imported.exitPrice || imported.entryPrice,
+              volume: imported.volume || 0.1,
+              stopLoss: imported.stopLoss,
+              takeProfit: imported.takeProfit,
+              grossPnl: imported.pnl !== undefined ? imported.pnl : 0,
+              commission: -2.0,
+              swap: 0,
+              netPnl: imported.pnl !== undefined ? imported.pnl - 2.0 : -2.0,
+              setupTag: imported.setupTag || 'TradingView Alert',
+              emotion: 'Disciplined',
+              ruleFollowingScore: 5,
+              preTradePlan: imported.preTradePlan || 'Automated execution via TradingView Webhook Bridge',
+              account: 'Webhook Auto-Sync',
+            };
+            onAddTrade(newTrade);
+            setShowWebhookModal(false);
+          }}
+        />
       )}
     </div>
   );

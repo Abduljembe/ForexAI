@@ -5,6 +5,9 @@ import { TradingViewTechnicalAnalysis } from './TradingView/TradingViewTechnical
 import { TradingViewForexHeatMap } from './TradingView/TradingViewForexHeatMap';
 import { TradingViewEconomicCalendar } from './TradingView/TradingViewEconomicCalendar';
 import { TradingViewTickerTape } from './TradingView/TradingViewTickerTape';
+import { MultiChartMatrix } from './MultiChartMatrix';
+import { ForexSessionClock } from './ForexSessionClock';
+import { VoiceBriefingPlayer } from './VoiceBriefingPlayer';
 import {
   Sparkles,
   TrendingUp,
@@ -17,6 +20,8 @@ import {
   Maximize2,
   Columns,
   Square,
+  LayoutGrid,
+  Clock,
 } from 'lucide-react';
 
 interface MarketIntelligenceViewProps {
@@ -30,11 +35,11 @@ export const MarketIntelligenceView: React.FC<MarketIntelligenceViewProps> = ({
 }) => {
   const [selectedSymbol, setSelectedSymbol] = useState<string>('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>('60'); // '15', '60', '240', 'D'
-  const [chartHeight, setChartHeight] = useState<number>(760); // 650, 760, 900
-  const [layoutMode, setLayoutMode] = useState<'full' | 'split'>('full'); // Default to full-width expansive terminal
+  const [chartHeight, setChartHeight] = useState<number>(760);
+  const [layoutMode, setLayoutMode] = useState<'full' | 'split'>('full');
   const [briefing, setBriefing] = useState<string | null>(null);
   const [isGeneratingBriefing, setIsGeneratingBriefing] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'chart' | 'heatmap' | 'calendar'>('chart');
+  const [activeTab, setActiveTab] = useState<'chart' | 'matrix' | 'sessions' | 'heatmap' | 'calendar'>('chart');
 
   const activeQuote = quotes.find((q) => q.symbol === selectedSymbol) || quotes[0];
   const tvTheme = darkMode ? 'dark' : 'light';
@@ -101,22 +106,44 @@ export const MarketIntelligenceView: React.FC<MarketIntelligenceViewProps> = ({
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Main View Tabs */}
-          <div className="flex items-center bg-slate-100 dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-800 text-xs">
+          <div className="flex flex-wrap items-center bg-slate-100 dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-800 text-xs gap-0.5">
             <button
               onClick={() => setActiveTab('chart')}
               className={`px-3 py-1 rounded font-medium transition-colors ${
                 activeTab === 'chart'
-                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs font-semibold'
                   : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Advanced Chart
             </button>
             <button
+              onClick={() => setActiveTab('matrix')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded font-medium transition-colors ${
+                activeTab === 'matrix'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs font-semibold'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5 text-blue-500" />
+              <span>Multi-Chart Grid</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('sessions')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded font-medium transition-colors ${
+                activeTab === 'sessions'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs font-semibold'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Clock className="w-3.5 h-3.5 text-amber-500" />
+              <span>Sessions & Overlaps</span>
+            </button>
+            <button
               onClick={() => setActiveTab('heatmap')}
               className={`px-3 py-1 rounded font-medium transition-colors ${
                 activeTab === 'heatmap'
-                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs font-semibold'
                   : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -126,7 +153,7 @@ export const MarketIntelligenceView: React.FC<MarketIntelligenceViewProps> = ({
               onClick={() => setActiveTab('calendar')}
               className={`px-3 py-1 rounded font-medium transition-colors ${
                 activeTab === 'calendar'
-                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs font-semibold'
                   : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -317,18 +344,21 @@ export const MarketIntelligenceView: React.FC<MarketIntelligenceViewProps> = ({
 
                   {/* AI Structured Briefing Card */}
                   {briefing && (
-                    <div className="p-5 rounded-xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 shadow-xs">
-                      <div className="flex items-center justify-between pb-3 border-b border-blue-200 dark:border-blue-900/60">
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                          <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-                            Institutional Market Briefing ({activeQuote.symbol})
-                          </h3>
+                    <div className="space-y-3">
+                      <VoiceBriefingPlayer briefingText={briefing} pair={activeQuote.symbol} />
+                      <div className="p-5 rounded-xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 shadow-xs">
+                        <div className="flex items-center justify-between pb-3 border-b border-blue-200 dark:border-blue-900/60">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                              Institutional Market Briefing ({activeQuote.symbol})
+                            </h3>
+                          </div>
+                          <span className="text-[10px] font-mono text-slate-400">Gemini 3.8 Flash</span>
                         </div>
-                        <span className="text-[10px] font-mono text-slate-400">Gemini 3.8 Flash</span>
-                      </div>
-                      <div className="mt-3 text-xs leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-line font-sans">
-                        {briefing}
+                        <div className="mt-3 text-xs leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-line font-sans">
+                          {briefing}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -401,6 +431,16 @@ export const MarketIntelligenceView: React.FC<MarketIntelligenceViewProps> = ({
             </div>
           )}
         </div>
+      )}
+
+      {/* Multi-Chart Matrix Grid View */}
+      {activeTab === 'matrix' && (
+        <MultiChartMatrix darkMode={darkMode} />
+      )}
+
+      {/* 24-Hour Forex Sessions & Overlap Clock */}
+      {activeTab === 'sessions' && (
+        <ForexSessionClock />
       )}
 
       {/* Currency Heatmap View */}

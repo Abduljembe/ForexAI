@@ -16,6 +16,9 @@ import {
   FileSpreadsheet,
   Plus,
   Compass,
+  Zap,
+  Radio,
+  LayoutGrid,
 } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -83,6 +86,65 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <span>Import Broker CSV</span>
           </button>
         </div>
+      </div>
+
+      {/* Institutional Intelligence Launchpad */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <button
+          onClick={() => onNavigate('market')}
+          className="p-3.5 text-left rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all shadow-xs group"
+        >
+          <div className="flex items-center justify-between">
+            <span className="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
+              <LayoutGrid className="w-4 h-4" />
+            </span>
+            <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
+          </div>
+          <div className="mt-2.5 font-bold text-xs text-slate-900 dark:text-white">Multi-Chart Matrix</div>
+          <p className="text-[11px] text-slate-500 mt-0.5">EUR/USD vs DXY & 4-grid</p>
+        </button>
+
+        <button
+          onClick={() => onNavigate('risk')}
+          className="p-3.5 text-left rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-all shadow-xs group"
+        >
+          <div className="flex items-center justify-between">
+            <span className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 group-hover:scale-105 transition-transform">
+              <Award className="w-4 h-4" />
+            </span>
+            <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all" />
+          </div>
+          <div className="mt-2.5 font-bold text-xs text-slate-900 dark:text-white">Prop Firm Guard</div>
+          <p className="text-[11px] text-slate-500 mt-0.5">FTMO daily loss & simulator</p>
+        </button>
+
+        <button
+          onClick={() => onNavigate('market')}
+          className="p-3.5 text-left rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 dark:hover:border-amber-500/50 transition-all shadow-xs group"
+        >
+          <div className="flex items-center justify-between">
+            <span className="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 group-hover:scale-105 transition-transform">
+              <Clock className="w-4 h-4" />
+            </span>
+            <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-500 group-hover:translate-x-0.5 transition-all" />
+          </div>
+          <div className="mt-2.5 font-bold text-xs text-slate-900 dark:text-white">Session Overlaps</div>
+          <p className="text-[11px] text-slate-500 mt-0.5">London / NY golden hours</p>
+        </button>
+
+        <button
+          onClick={() => onNavigate('journal')}
+          className="p-3.5 text-left rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 transition-all shadow-xs group"
+        >
+          <div className="flex items-center justify-between">
+            <span className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform">
+              <Zap className="w-4 h-4" />
+            </span>
+            <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all" />
+          </div>
+          <div className="mt-2.5 font-bold text-xs text-slate-900 dark:text-white">Webhook Bridge</div>
+          <p className="text-[11px] text-slate-500 mt-0.5">TradingView alert auto-sync</p>
+        </button>
       </div>
 
       {/* Empty State when 0 real trades are present */}

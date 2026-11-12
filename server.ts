@@ -582,6 +582,64 @@ Key Takeaways:
   }
 });
 
+// In-memory buffer for incoming automated webhook trade alerts
+const receivedWebhookTrades: any[] = [];
+
+// 6. Webhook Bridge: Receive real-time trade signals from TradingView or MT4/MT5 EA
+app.post('/api/trades/webhook', (req: Request, res: Response) => {
+  try {
+    const payload = req.body || {};
+    const { secret, symbol, side, entryPrice, exitPrice, stopLoss, takeProfit, volume, setupTag, pnl, pips, notes } = payload;
+
+    const eventId = `wh_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const tradeEvent = {
+      id: eventId,
+      timestamp: new Date().toISOString(),
+      source: payload.source || 'TradingView Webhook',
+      action: payload.action || 'ENTRY',
+      symbol: symbol || 'EUR/USD',
+      side: (side || 'BUY').toUpperCase(),
+      entryPrice: parseFloat(entryPrice) || 0,
+      exitPrice: exitPrice ? parseFloat(exitPrice) : undefined,
+      stopLoss: stopLoss ? parseFloat(stopLoss) : undefined,
+      takeProfit: takeProfit ? parseFloat(takeProfit) : undefined,
+      volume: parseFloat(volume) || 0.1,
+      setupTag: setupTag || 'Webhook Auto-Sync',
+      pnl: pnl !== undefined ? parseFloat(pnl) : undefined,
+      pips: pips !== undefined ? parseFloat(pips) : undefined,
+      notes: notes || 'Received via TradingView Alert Webhook Bridge',
+    };
+
+    receivedWebhookTrades.unshift(tradeEvent);
+    if (receivedWebhookTrades.length > 50) {
+      receivedWebhookTrades.pop();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Trade alert webhook ingested successfully',
+      event: tradeEvent,
+    });
+  } catch (error: any) {
+    console.error('Webhook Error:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Fetch recent incoming webhooks
+app.get('/api/trades/webhook-events', (_req: Request, res: Response) => {
+  res.json({
+    events: receivedWebhookTrades,
+    count: receivedWebhookTrades.length,
+  });
+});
+
+// Clear or dismiss webhook events
+app.delete('/api/trades/webhook-events', (_req: Request, res: Response) => {
+  receivedWebhookTrades.length = 0;
+  res.json({ success: true, message: 'Webhook events buffer cleared' });
+});
+
 // Dev vs Prod Vite Integration
 const isProd = process.env.NODE_ENV === 'production';
 

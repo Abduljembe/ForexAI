@@ -176,3 +176,46 @@ export interface AcademyLesson {
     explanation: string;
   }[];
 }
+
+export interface PropFirmSettings {
+  firmName: 'FTMO' | 'FundedNext' | 'TheFundedTrader' | 'AlphaCapital' | 'Custom';
+  phase: 'Phase 1' | 'Phase 2' | 'Funded';
+  accountSize: number;
+  currentEquity: number;
+  startOfDayBalance: number;
+  maxDailyLossPercent: number;
+  maxOverallLossPercent: number;
+  profitTargetPercent: number;
+  minimumTradingDays: number;
+  activeTradingDays: number;
+}
+
+export interface ForexSession {
+  name: string;
+  city: string;
+  openUtc: number;
+  closeUtc: number;
+  status: 'OPEN' | 'CLOSED' | 'OVERLAP';
+  volatilityRating: 'HIGH' | 'MEDIUM' | 'LOW';
+  activePairs: string[];
+  avgPips: number;
+}
+
+export interface WebhookTradeEvent {
+  id: string;
+  timestamp: string;
+  source: string;
+  action: 'ENTRY' | 'EXIT';
+  symbol: string;
+  side: TradeSide;
+  entryPrice: number;
+  exitPrice?: number;
+  stopLoss?: number;
+  takeProfit?: number;
+  volume: number;
+  setupTag?: string;
+  pnl?: number;
+  pips?: number;
+  notes?: string;
+}
+

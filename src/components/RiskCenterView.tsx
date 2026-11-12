@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MarketQuote, RiskSettings } from '../types/forex';
+import { PropFirmGuard } from './PropFirmGuard';
 import {
   ShieldAlert,
   ShieldCheck,
@@ -11,6 +12,7 @@ import {
   DollarSign,
   TrendingDown,
   Info,
+  Award,
 } from 'lucide-react';
 
 interface RiskCenterViewProps {
@@ -26,6 +28,8 @@ export const RiskCenterView: React.FC<RiskCenterViewProps> = ({
   onUpdateRiskSettings,
   currentEquity,
 }) => {
+  const [riskTab, setRiskTab] = useState<'prop_firm' | 'calculators'>('prop_firm');
+
   // Position Sizing Calculator state
   const [calcBalance, setCalcBalance] = useState<number>(riskSettings.accountBalance);
   const [calcRiskPercent, setCalcRiskPercent] = useState<number>(riskSettings.maxRiskPerTradePercent);
@@ -126,8 +130,38 @@ export const RiskCenterView: React.FC<RiskCenterViewProps> = ({
         </div>
       )}
 
-      {/* Primary Grid: Position Sizer (Left 6) + Pip & Correlation (Right 6) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Risk Tabs */}
+      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <button
+          onClick={() => setRiskTab('prop_firm')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+            riskTab === 'prop_firm'
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <Award className="w-3.5 h-3.5" />
+          <span>Prop Firm Challenge Guard (FTMO / MFF)</span>
+        </button>
+
+        <button
+          onClick={() => setRiskTab('calculators')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+            riskTab === 'calculators'
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <Calculator className="w-3.5 h-3.5" />
+          <span>Sizing, Pips & Risk-of-Ruin Simulator</span>
+        </button>
+      </div>
+
+      {riskTab === 'prop_firm' ? (
+        <PropFirmGuard currentBalance={currentEquity} />
+      ) : (
+        /* Primary Grid: Position Sizer (Left 6) + Pip & Correlation (Right 6) */
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Position Sizing Calculator (6 cols) */}
         <div className="lg:col-span-6 space-y-6">
           <div className="p-5 rounded-lg bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/80 shadow-xs">
@@ -376,6 +410,7 @@ export const RiskCenterView: React.FC<RiskCenterViewProps> = ({
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };
