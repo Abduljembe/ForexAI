@@ -1,0 +1,6 @@
+{
+  "name": "ForexAI - AI Forex Trading Intelligence Platform",
+  "description": "All-in-one institutional forex trading intelligence platform featuring AI market analysis, trade setup evaluation, automated trading journal, risk management center, statistical backtesting lab, and personalized performance coaching.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
